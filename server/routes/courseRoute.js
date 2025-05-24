@@ -1,25 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const upload = require('../config/multerConfig');
+const { createCourse, getCourses, deleteCourse, updateCourse } = require('../controllers/courseController');
 
-const { createCourse, getCourses,deleteCourse,updateCourse } = require('../controllers/courseController');
-
-
-// Kurs ekleme (authenticate middleware'ı ekleyin)
+// Yeni kurs oluşturma (dosya ve görsel yükleme için multer middleware)
 router.post('/createCourse', upload.fields([
   { name: 'file', maxCount: 1 },
   { name: 'image', maxCount: 1 }
 ]), createCourse);
 
-// Kurs listeleme (GET)
+// Tüm kursları listeleme
 router.get('/getCourses', getCourses);
 
-// Kurs sil
+// Kurs silme (admin yetkisi ile)
 router.delete('/deleteCourse/:id', deleteCourse);
 
-// Kurs güncelleme kullanmadım
+// Kurs güncelleme
 router.put('/updateCourse/:id', upload.fields([
   { name: 'file', maxCount: 1 },
   { name: 'image', maxCount: 1 }
 ]), updateCourse);
+
 module.exports = router;

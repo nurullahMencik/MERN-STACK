@@ -13,7 +13,7 @@ export const register = createAsyncThunk(
   'auth/register',
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', formData);
+      const res = await axios.post('https://konya-backend.onrender.com/api/auth/register', formData);
       return res.data; // İçinde user ve token var
     } catch (err) {
       return rejectWithValue(err.response.data.message);
@@ -26,7 +26,7 @@ export const login = createAsyncThunk(
   'auth/login',
   async (authData, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post('http://localhost:5000/api/auth/login', authData);
+      const { data } = await axios.post('https://konya-backend.onrender.com/api/auth/login', authData);
       return data;
     } catch (error) {
       toast.error(error.response?.data?.message || 'Giriş başarısız!', {
@@ -67,12 +67,21 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(login.fulfilled, (state, action) => {
-        state.loading = false;
-        state.auth = action.payload;
-        localStorage.setItem('auth', JSON.stringify(action.payload));
-        window.location.href = '/';
-      })
+     .addCase(login.fulfilled, (state, action) => {
+  state.loading = false;
+  state.auth = action.payload;
+
+  // auth içinde hem user hem token var
+  const { token } = action.payload;
+
+  localStorage.setItem('auth', JSON.stringify(action.payload));
+
+  if (token) {
+    localStorage.setItem('token', token); // ✅ TOKEN'I AYRI KAYDET!
+  }
+
+  window.location.href = '/';
+})
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

@@ -11,20 +11,24 @@ const CoursesPage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const coursesPerPage = 4;
+  const coursesPerPage = 6;
 
   useEffect(() => {
     dispatch(getCourses());
   }, [dispatch]);
 
-  const categories = [...new Set(courses.map(course => course.category))];
+ const categories = [...new Set(courses.map(course => course.category))];
 
-  const filteredCourses = courses.filter((course) => {
-    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          course.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory ? course.category === selectedCategory : true;
-    return matchesSearch && matchesCategory;
-  });
+const filteredCourses = courses.filter((course) => {
+  const title = course.title || '';
+  const search = searchTerm.toLowerCase();
+
+  const matchesSearch = title.toLowerCase().includes(search)  
+  const matchesCategory = selectedCategory ? course.category === selectedCategory : true;
+
+  return matchesSearch && matchesCategory;
+});
+
 
   const totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
   const indexOfLastCourse = currentPage * coursesPerPage;

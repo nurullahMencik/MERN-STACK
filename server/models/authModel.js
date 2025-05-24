@@ -16,11 +16,13 @@ const authSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-    isAdmin: {
-    type: Boolean,
-    default: false
-  },
-  myCourses: [
+  myCourses: [ //kullnıcının satın aldıgı kurslar
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+    },
+  ],
+  createdCourses: [ // Kullanıcının oluşturduğu kurslar
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",

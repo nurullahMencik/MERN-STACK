@@ -1,171 +1,248 @@
-import React, { useState } from 'react'
-import { BiLogOut } from "react-icons/bi"
-import { FaShoppingCart, FaBars, FaTimes } from "react-icons/fa"
-import { useDispatch, useSelector } from 'react-redux'
-import { setModal } from '../redux/reducers/modalSlice.js'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from 'react';
+import {
+  BiLogOut,
+  BiUser,
+  BiBookAlt,
+  BiCart,
+  BiPlusCircle,
+  BiListUl,
+  BiLogIn,
+  BiUserPlus,
+} from 'react-icons/bi';
+import { FaTimes } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
-  const { auth } = useSelector((state) => state.auth); // auth bilgilerini aldık
-  console.log(auth?.user.isAdmin) // burası true donuyor admın ıse
-  const isAdmin = auth?.user?.isAdmin;  
+  const { auth } = useSelector((state) => state.auth);
+  const isAdmin = auth?.user?.isAdmin;
+  const cartItems = useSelector((state) => state.cart.items);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const cartItems = useSelector(state => state.cart.items)
-  const [menuOpen, setMenuOpen] = useState(false)
+  const username = auth?.user?.username || '';
+  const profileLetter = username.charAt(0).toUpperCase();
 
   const logoutFunc = () => {
-    localStorage.clear()
-    window.location = "/auth"
-  }
+    localStorage.clear();
+    window.location = '/auth';
+  };
+
+  const menuItems = [
+    {
+      title: 'Admin Paneli',
+      path: '/admin',
+      icon: <BiUser />,
+      visible: isAdmin,
+    },
+    {
+      title: 'Kurs Yükle',
+      path: '/course-upload',
+      icon: <BiPlusCircle />,
+      visible: !isAdmin,
+    },
+    {
+      title: 'Tüm Kurslar',
+      path: '/courses',
+      icon: <BiBookAlt />,
+      visible: !isAdmin,
+    },
+    {
+      title: 'Oluşturduğum Kurslar',
+      path: '/myCreatedCourses',
+      icon: <BiListUl />,
+      visible: !isAdmin,
+    },
+    {
+      title: 'Satın Aldıklarım',
+      path: '/myCourses',
+      icon: <BiBookAlt />,
+      visible: !isAdmin,
+    },
+    {
+      title: 'Sepetim',
+      path: '/cart',
+      icon: <BiCart />,
+      badge: cartItems.length,
+      visible: !isAdmin,
+    },
+  ];
 
   return (
-    <div className='bg-indigo-600 text-white'>
-      <div className='flex justify-between items-center px-4 py-4 md:px-6 max-w-7xl mx-auto'>
-        {/* Logo */}
-        <div onClick={() => navigate('/')} className='text-2xl font-bold cursor-pointer'>
+    <>
+      {/* Mobil Header */}
+      <div className="md:hidden bg-indigo-600 text-white p-4 flex justify-between items-center">
+        <div onClick={() => navigate('/')} className="text-2xl font-bold cursor-pointer">
           ADEMY
         </div>
-
-        {/* Hamburger Menu (Mobile) */}
-        <div className="md:hidden">
-          <button onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+        <div className="flex items-center space-x-3">
+          {auth ? (
+            <div
+              onClick={() => navigate('/profile')}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-white text-indigo-700 font-bold cursor-pointer"
+            >
+              {profileLetter}
+            </div>
+          ) : null}
+          <button onClick={() => setSidebarOpen(true)}>
+            <BiListUl size={24} />
           </button>
-        </div>
-
-        {/* Menu (Desktop) */}
-        <div className='hidden md:flex items-center space-x-5'>
-          <input
-            type="text"
-            placeholder='Ara'
-            className='p-2 outline-none rounded-md text-black'
-          />
-
-          
-
-         {
-          isAdmin ? <div
-            onClick={() => navigate('/admin')}
-            className='cursor-pointer hover:underline'
-          >
-            Admin
-          </div>: <>
-          <div
-            onClick={() => dispatch(setModal(true))}
-            className='border px-4 py-2 rounded-md cursor-pointer hover:bg-indigo-900 text-center'
-          >
-            Kurs Yükle
-          </div>
-
-          <div
-            onClick={() => navigate('/courses')}
-            className='border px-4 py-2 rounded-md cursor-pointer hover:bg-indigo-900 text-center'
-          >
-            Kurslar
-          </div>
-
-          <div
-            onClick={() => navigate('/cart')}
-            className='relative cursor-pointer hover:text-gray-300'
-            title="Sepetim"
-          >
-            <FaShoppingCart size={24} />
-            {cartItems.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-xs px-1.5 py-0.5 rounded-full">
-                {cartItems.length}
-              </span>
-            )}
-          </div>
-
-          <div
-            onClick={() => navigate('/myCourses')}
-            className='cursor-pointer hover:underline'
-          >
-            Eğitimlerim
-          </div>
-          </>
-         }
-          <BiLogOut
-            onClick={logoutFunc}
-            size={25}
-            className='cursor-pointer'
-          />
         </div>
       </div>
 
-      {/* Mobile Menü */}
-      {menuOpen && (
-        <div className='md:hidden px-4 py-4 space-y-4 bg-indigo-700'>
-          <input
-            type="text"
-            placeholder='Ara'
-            className='w-full p-2 rounded-md outline-none text-black'
-          />
+      {/* Masaüstü Header */}
+      <div className="hidden md:flex bg-indigo-600 text-white p-4 items-center justify-between">
+        <div onClick={() => navigate('/')} className="text-2xl font-bold cursor-pointer">
+          ADEMY
+        </div>
+        <div className="flex items-center gap-4">
+          {menuItems.map(
+            (item) =>
+              item.visible && (
+                <div
+                  key={item.path}
+                  onClick={() => navigate(item.path)}
+                  className="flex items-center cursor-pointer hover:bg-indigo-700 px-3 py-2 rounded-md"
+                >
+                  <span className="mr-2">{item.icon}</span>
+                  {item.title}
+                  {item.badge > 0 && (
+                    <span className="ml-2 bg-red-500 text-xs px-2 py-0.5 rounded-full">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
+              )
+          )}
+        </div>
+        <div className="flex items-center gap-4">
+          {!auth ? (
+            <>
+              <div
+                onClick={() => navigate('/auth', { state: { initialMode: true } })}
+                className="flex items-center cursor-pointer hover:bg-indigo-700 px-3 py-2 rounded-md"
+              >
+                <BiUserPlus className="mr-2" />
+                Kayıt Ol
+              </div>
+              <div
+                onClick={() => navigate('/auth', { state: { initialMode: false } })}
+                className="flex items-center cursor-pointer hover:bg-indigo-700 px-3 py-2 rounded-md"
+              >
+                <BiLogIn className="mr-2" />
+                Giriş Yap
+              </div>
+            </>
+          ) : (
+            <>
+              <div
+                onClick={() => navigate('/profile')}
+                className="w-9 h-9 flex items-center justify-center rounded-full bg-white text-indigo-700 font-bold cursor-pointer"
+              >
+                {profileLetter}
+              </div>
+              <div
+                onClick={logoutFunc}
+                className="flex items-center cursor-pointer hover:bg-indigo-700 px-3 py-2 rounded-md"
+              >
+                <BiLogOut className="mr-2" />
+                Çıkış Yap
+              </div>
+            </>
+          )}
+        </div>
+      </div>
 
-          <button
-            onClick={() => dispatch(setModal(true))}
-            className='w-full py-2 bg-indigo-800 rounded-md'
-          >
-            Kurs Yükle
-          </button>
+      {/* Mobil Sidebar */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-50 flex">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50"
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+          <div className="relative w-72 max-w-full bg-indigo-700 text-white h-full flex flex-col">
+            <div className="p-4 flex justify-between items-center border-b border-indigo-600">
+              <div className="text-xl font-bold">Menü</div>
+              <button onClick={() => setSidebarOpen(false)}>
+                <FaTimes size={20} />
+              </button>
+            </div>
 
-          <button
-            onClick={() => {
-              navigate('/courses')
-              setMenuOpen(false)
-            }}
-            className='w-full py-2 bg-indigo-800 rounded-md'
-          >
-            Kurslar
-          </button>
-
-          <button
-            onClick={() => {
-              navigate('/cart')
-              setMenuOpen(false)
-            }}
-            className='w-full py-2 bg-indigo-800 rounded-md'
-          >
-            Sepetim
-            {cartItems.length > 0 && (
-              <span className="bg-red-500 text-xs px-2 py-0.5 rounded-full">
-                {cartItems.length}
-              </span>
+            {auth && (
+              <div
+                onClick={() => {
+                  navigate('/profile');
+                  setSidebarOpen(false);
+                }}
+                className="w-20 h-20 my-4 mx-auto flex items-center justify-center rounded-full bg-white text-indigo-700 text-3xl font-bold cursor-pointer"
+              >
+                {profileLetter}
+              </div>
             )}
-          </button>
 
-          <button
-            onClick={() => {
-              navigate('/myCourses')
-              setMenuOpen(false)
-            }}
-            className='w-full py-2 bg-indigo-800 rounded-md'
-          >
-            Eğitimlerim
-          </button>
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+              {menuItems.map(
+                (item) =>
+                  item.visible && (
+                    <div
+                      key={item.path}
+                      onClick={() => {
+                        navigate(item.path);
+                        setSidebarOpen(false);
+                      }}
+                      className="flex items-center p-3 hover:bg-indigo-600 rounded-md cursor-pointer"
+                    >
+                      <span className="mr-3 text-lg">{item.icon}</span>
+                      {item.title}
+                      {item.badge > 0 && (
+                        <span className="ml-auto bg-red-500 text-xs px-2 py-0.5 rounded-full">
+                          {item.badge}
+                        </span>
+                      )}
+                    </div>
+                  )
+              )}
 
-          <button
-            onClick={() => {
-              navigate('/admin')
-              setMenuOpen(false)
-            }}
-            className='w-full py-2 bg-indigo-800 rounded-md'
-          >
-            Admin
-          </button>
+              {!auth && (
+                <>
+                  <div
+                    onClick={() => {
+                      navigate('/auth', { state: { initialMode: true } });
+                      setSidebarOpen(false);
+                    }}
+                    className="flex items-center p-3 hover:bg-indigo-600 rounded-md cursor-pointer"
+                  >
+                    <BiUserPlus className="mr-2" />
+                    Kayıt Ol
+                  </div>
+                  <div
+                    onClick={() => {
+                      navigate('/auth', { state: { initialMode: false } });
+                      setSidebarOpen(false);
+                    }}
+                    className="flex items-center p-3 hover:bg-indigo-600 rounded-md cursor-pointer"
+                  >
+                    <BiLogIn className="mr-2" />
+                    Giriş Yap
+                  </div>
+                </>
+              )}
+            </div>
 
-          <button
-            onClick={logoutFunc}
-            className='w-full py-2 bg-red-600 rounded-md'
-          >
-            Çıkış Yap
-          </button>
+            {auth && (
+              <div
+                onClick={logoutFunc}
+                className="p-4 border-t border-indigo-600 flex items-center hover:bg-indigo-600 cursor-pointer"
+              >
+                <BiLogOut className="mr-3" />
+                Çıkış Yap
+              </div>
+            )}
+          </div>
         </div>
       )}
-    </div>
-  )
-}
+    </>
+  );
+};
 
-export default Navbar
+export default Navbar;

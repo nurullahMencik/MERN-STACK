@@ -4,6 +4,7 @@ import modalReducer from "./reducers/modalSlice"
 import courseReducer from "./reducers/courseSlice"
 import cartReducer from "./reducers/cartSlice"
 import myCoursesReducer from "./reducers/myCoursesSlice.js"
+import userReducer from "./reducers/userSlice.js"
 
 export const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ export const store = configureStore({
     modal : modalReducer,
     course : courseReducer,
     cart : cartReducer,
-    myCourses: myCoursesReducer
+    myCourses: myCoursesReducer,
+    user: userReducer, // ✅ Bunu ekleyin
 
   },
   middleware: (getDefaultMiddleware) =>

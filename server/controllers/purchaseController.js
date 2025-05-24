@@ -1,14 +1,18 @@
-// controllers/purchaseController.js
 const User = require("../models/authModel.js");
 
+/**
+ * Kullanıcı kurs satın alma işlemi.
+ * Kullanıcının mevcut kurslarıyla çakışmayan kursları ekler.
+ */
 const purchaseCourses = async (req, res) => {
-  const { userId, courses } = req.body; // courses = [courseId1, courseId2...]
+  const { userId, courses } = req.body; // courses: [courseId1, courseId2, ...]
 
   try {
     const user = await User.findById(userId);
+
     if (!user) return res.status(404).json({ message: "Kullanıcı bulunamadı" });
 
-    // Zaten sahip olunan kursları tekrar eklememek için filtreliyoz
+    // Zaten sahip olunan kursları tekrar eklememek için filtreleme
     const newCourses = courses.filter(
       (courseId) => !user.myCourses.includes(courseId)
     );

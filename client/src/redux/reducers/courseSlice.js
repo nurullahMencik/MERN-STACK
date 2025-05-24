@@ -7,7 +7,7 @@ export const createCourse = createAsyncThunk(
   'courses/createCourse',
   async (formData, thunkAPI) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/courses/createCourse', formData, {
+      const response = await axios.post('https://konya-backend.onrender.com/api/courses/createCourse', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -28,7 +28,7 @@ export const getCourses = createAsyncThunk(
   'courses/getCourses',
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get('http://localhost:5000/api/courses/getCourses');
+      const response = await axios.get('https://konya-backend.onrender.com/api/courses/getCourses');
       return {
         courses: response.data.courses || response.data || [],
       };
@@ -48,7 +48,7 @@ export const deleteCourse = createAsyncThunk(
   'courses/deleteCourse',
   async (courseId, thunkAPI) => {
     try {
-      await axios.delete(`http://localhost:5000/api/courses/deleteCourse/${courseId}`);
+      await axios.delete(`https://konya-backend.onrender.com/api/courses/deleteCourse/${courseId}`);
       toast.success('Kurs başarıyla silindi!');
       return courseId;
     } catch (error) {
@@ -62,32 +62,7 @@ export const deleteCourse = createAsyncThunk(
   }
 );
 
-// Kurs güncelleme
-export const updateCourse = createAsyncThunk(
-  'courses/updateCourse',
-  async ({ courseId, updatedData }, thunkAPI) => {
-    try {
-      const response = await axios.put(
-        `http://localhost:5000/api/courses/updateCourse/${courseId}`,
-        updatedData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      toast.success('Kurs başarıyla güncellendi!');
-      return response.data;
-    } catch (error) {
-      const errorMsg = error.response?.data?.msg || 'Kurs güncellenemedi';
-      toast.error(errorMsg);
-      return thunkAPI.rejectWithValue({
-        message: errorMsg,
-        error: error.response?.data
-      });
-    }
-  }
-);
+
 
 // Slice
 const courseSlice = createSlice({
@@ -148,22 +123,6 @@ const courseSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Update
-      .addCase(updateCourse.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(updateCourse.fulfilled, (state, action) => {
-        state.loading = false;
-        const index = state.courses.findIndex(course => course._id === action.payload._id);
-        if (index !== -1) {
-          state.courses[index] = action.payload;
-        }
-      })
-      .addCase(updateCourse.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      });
   },
 });
 

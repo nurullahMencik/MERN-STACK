@@ -13,7 +13,7 @@ const VideoPage = () => {
     return <div className="text-center text-red-600 font-semibold">Kurs bulunamadı!</div>;
   }
 
-  const videoUrl = `http://localhost:5000${course.fileUrl}`;
+  const videoUrl = `https://konya-backend.onrender.com${course.fileUrl}`;
 
   return (
     <div className="flex flex-col items-center justify-start bg-gray-100 min-h-screen p-4 sm:p-6">
