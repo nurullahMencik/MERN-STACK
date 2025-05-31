@@ -2,46 +2,39 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeFromCart } from '../redux/reducers/cartSlice.js';
 import { toast } from 'react-toastify';
-import { FiShoppingCart, FiTrash2, FiArrowLeft, FiCheckCircle , FiLock } from 'react-icons/fi';
+import { FiShoppingCart, FiTrash2, FiArrowLeft, FiCheckCircle, FiLock } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+
+const coupons = {
+  'INDIRIM10': { type: 'percentage', value: 10 },
+  'SABIT25': { type: 'fixed', value: 25 },
+};
 
 const CartPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartItems = useSelector(state => state.cart.items);
 
-  const [coupon, setCoupon] = useState('');
+  const [couponInput, setCouponInput] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null);
-  const [errorMessage, setErrorMessage] = useState('');
 
   const totalPrice = cartItems.reduce((sum, item) => sum + item.price, 0);
-  const discountAmount = appliedCoupon ? (totalPrice * appliedCoupon.discount) / 100 : 0;
-  const priceWithTax = totalPrice * 1.18;
-  const finalPrice = (priceWithTax - discountAmount).toFixed(2);
+
+  const discount = (() => {
+    if (!appliedCoupon) return 0;
+    if (appliedCoupon.type === 'percentage') {
+      return totalPrice * (appliedCoupon.value / 100);
+    } else if (appliedCoupon.type === 'fixed') {
+      return Math.min(appliedCoupon.value, totalPrice);
+    }
+    return 0;
+  })();
+
+  const totalWithVAT = (totalPrice - discount) * 1.18;
 
   const handleRemove = (id, title) => {
     dispatch(removeFromCart(id));
     toast.success(`${title} sepetten kaldırıldı!`);
-  };
-
-  const handleApplyCoupon = async () => {
-    try {
-      const res = await axios.post('https://konya-backend.onrender.com/api/coupons/apply', { code: coupon });
-      setAppliedCoupon(res.data);
-      setErrorMessage('');
-      toast.success(`"${coupon}" kuponu başarıyla uygulandı!`);
-    } catch (err) {
-      setAppliedCoupon(null);
-      if (err.response) {
-        setErrorMessage(err.response.data.message);
-      } else {
-        setErrorMessage('Sunucu hatası!');
-      }
-    }
-  };
-    const handleSeeAll = () => {
-    navigate('/courses');
   };
 
   const handlePurchase = () => {
@@ -51,6 +44,33 @@ const CartPage = () => {
     }
     navigate("/payment");
   };
+    const handleSeeAll = () => {
+    navigate('/courses');
+  };
+
+
+  const applyCoupon = () => {
+  const code = couponInput.trim().toUpperCase();
+
+  const usedCoupons = JSON.parse(localStorage.getItem("usedCoupons") || "[]");
+
+  if (usedCoupons.includes(code)) {
+    toast.error("Bu kupon zaten kullanıldı!");
+    return;
+  }
+
+  if (coupons[code]) {
+    setAppliedCoupon(coupons[code]);
+    toast.success(`"${code}" kuponu uygulandı!`);
+
+    // localStorage'a kaydet
+    const updatedCoupons = [...usedCoupons, code];
+    localStorage.setItem("usedCoupons", JSON.stringify(updatedCoupons));
+  } else {
+    toast.error("Geçersiz kupon kodu!");
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -60,7 +80,8 @@ const CartPage = () => {
             <FiArrowLeft className="mr-1" /> Geri
           </button>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center justify-center">
-            <FiShoppingCart className="mr-3" size={28} /> Sepetim
+            <FiShoppingCart className="mr-3" size={28} />
+            Sepetim
           </h1>
           {cartItems.length > 0 && (
             <span className="ml-auto bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
@@ -87,8 +108,8 @@ const CartPage = () => {
               {cartItems.map(item => (
                 <div key={item._id} className="p-4 flex flex-col sm:flex-row">
                   <div className="flex-shrink-0 mb-4 sm:mb-0 sm:mr-4">
-                    <img 
-                      src={`https://konya-backend.onrender.com${item.imageUrl}`} 
+                    <img
+                      src={`https://konya-backend.onrender.com${item.imageUrl}`}
                       alt={item.title}
                       className="w-32 h-20 object-cover rounded-md"
                     />
@@ -112,54 +133,50 @@ const CartPage = () => {
               ))}
             </div>
 
-            <div className="border-t border-gray-200 p-4 bg-gray-50">
-              <div className="flex justify-between items-center mb-2">
+            <div className="border-t border-gray-200 p-4 bg-gray-50 space-y-4">
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  placeholder="Kupon Kodu"
+                  value={couponInput}
+                  onChange={e => setCouponInput(e.target.value)}
+                  className="flex-grow border px-3 py-2 rounded-l-md text-sm focus:outline-none"
+                />
+                <button
+                  onClick={applyCoupon}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-r-md hover:bg-blue-700 text-sm"
+                >
+                  Uygula
+                </button>
+              </div>
+              {appliedCoupon && (
+                <div className="text-green-600 text-sm">
+                  Kupon: <strong>{appliedCoupon.type === 'percentage' ? `%${appliedCoupon.value}` : `${appliedCoupon.value}₺`} indirim</strong> uygulandı.
+                </div>
+              )}
+
+              <div className="flex justify-between items-center">
                 <span className="text-gray-600">Ara Toplam:</span>
                 <span className="font-medium">{totalPrice.toFixed(2)}₺</span>
               </div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-600">KDV (%18):</span>
-                <span className="font-medium">{(totalPrice * 0.18).toFixed(2)}₺</span>
-              </div>
-              {appliedCoupon && (
-                <div className="flex justify-between items-center mb-2 text-green-700">
-                  <span>İndirim (%{appliedCoupon.discount}):</span>
-                  <span>-{discountAmount.toFixed(2)}₺</span>
+              {discount > 0 && (
+                <div className="flex justify-between items-center text-red-600">
+                  <span>İndirim:</span>
+                  <span>-{discount.toFixed(2)}₺</span>
                 </div>
               )}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">KDV (%18):</span>
+                <span className="font-medium">{((totalPrice - discount) * 0.18).toFixed(2)}₺</span>
+              </div>
               <div className="flex justify-between items-center text-lg font-bold">
                 <span>Toplam:</span>
-                <span className="text-blue-600">{finalPrice}₺</span>
-              </div>
-
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">İndirim Kodu</label>
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    value={coupon}
-                    onChange={(e) => setCoupon(e.target.value)}
-                    placeholder="Kupon kodunu girin"
-                    className="flex-1 border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <button
-                    onClick={handleApplyCoupon}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm"
-                  >
-                    Uygula
-                  </button>
-                </div>
-                {errorMessage && <p className="text-sm text-red-600 mt-1">{errorMessage}</p>}
-                {appliedCoupon && (
-                  <p className="text-sm text-green-600 mt-1">
-                    {appliedCoupon.code} kuponu uygulandı! %{appliedCoupon.discount} indirim.
-                  </p>
-                )}
+                <span className="text-blue-600">{totalWithVAT.toFixed(2)}₺</span>
               </div>
 
               <button
                 onClick={handlePurchase}
-                className="mt-6 w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-md font-medium flex items-center justify-center transition-colors"
+                className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-md font-medium flex items-center justify-center transition-colors"
               >
                 <FiCheckCircle className="mr-2" size={20} />
                 Satın Al ({cartItems.length} Kurs)
@@ -172,7 +189,7 @@ const CartPage = () => {
             </div>
           </div>
         )}
-      </div>z"
+      </div>
     </div>
   );
 };

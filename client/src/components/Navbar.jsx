@@ -30,8 +30,14 @@ const Navbar = () => {
 
   const menuItems = [
     {
-      title: 'Admin Paneli',
-      path: '/admin',
+      title: 'Admin Courses',
+      path: '/admin/courses',
+      icon: <BiUser />,
+      visible: isAdmin,
+    },
+    {
+      title: 'Admin Users',
+      path: '/admin/users',
       icon: <BiUser />,
       visible: isAdmin,
     },

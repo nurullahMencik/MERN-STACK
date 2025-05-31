@@ -10,7 +10,7 @@ router.get('/simple-ai', async (req, res) => {
   try {
     const popularCourses = await Course.aggregate([
       { $sort: { students: -1, createdAt: -1 } },
-      { $limit: 10 }
+      { $limit: 5 }
     ]);
     return res.json(popularCourses);
   } catch (error) {

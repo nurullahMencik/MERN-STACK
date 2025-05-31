@@ -22,6 +22,7 @@ import ProfileSettings from './pages/ProfileSettings';
 import UserCourses from './pages/UserCourses';
 import Love from "./pages/Love"
 import Portfoliom from './pages/portfoliom';
+import AdminUserList from './pages/AdminUserList';
 
 
 function App() {
@@ -66,7 +67,8 @@ function App() {
           
 
           {/* Admin sayfası sadece adminler için erişilebilir */}
-          <Route path="/admin" element={isAdmin ? <AdminCourseList /> : <Navigate to="/" replace />} />
+          <Route path="/admin/courses" element={isAdmin ? <AdminCourseList /> : <Navigate to="/" replace />} />
+          <Route path="/admin/users" element={isAdmin ? <AdminUserList /> : <Navigate to="/" replace />} />
 
           {/* TANIMLANMAYAN YOLLAR İÇİN ERROR PAGE */}
           <Route path="*" element={<ErrorPage />} />

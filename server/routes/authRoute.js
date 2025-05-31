@@ -19,6 +19,37 @@ router.get('/courses/:id', verifyToken, authController.getCourseById);
 
 router.get("/user/:username", authController.getCoursesByUsername);
 
+// Kullanıcı silme
+router.delete('/user/:id', async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ message: 'Kullanıcı bulunamadı.' });
+    res.status(200).json({ message: 'Kullanıcı silindi.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Sunucu hatası!' });
+  }
+});
+// PUT /api/auth/:id/admin - Kullanıcıyı admin yap
+router.put('/:id/admin', async (req, res) => {
+  try {
+    const { isAdmin } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { isAdmin },
+      { new: true }
+    );
+
+    if (!user) return res.status(404).json({ message: 'Kullanıcı bulunamadı.' });
+
+    res.status(200).json({ message: 'Admin durumu güncellendi.', user });
+  } catch (error) {
+    console.error('Admin yapma hatası:', error);
+    res.status(500).json({ message: 'Sunucu hatası.' });
+  }
+});
+
+
 router.get('/', async (req, res) => {
   try {
     const users = await User.find().select('username _id'); // Sadece username ve _id al

@@ -35,10 +35,7 @@ const CourseCard = ({ course }) => {
       onClick={handleNavigate}
       className="group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl bg-white shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 dark:bg-gray-800"
     >
-      {/* Hot/Badge Ribbon */}
-      <div className="absolute -right-8 -top-2 z-10 w-32 rotate-45 transform bg-gradient-to-r from-pink-500 to-rose-500 py-1 text-center text-xs font-bold uppercase text-white shadow-lg">
-        <FaFire className="mr-1 inline" /> Popüler
-      </div>
+     
       
       {/* Course Image */}
       <div className="relative h-48 overflow-hidden">
@@ -58,9 +55,7 @@ const CourseCard = ({ course }) => {
             <RiTimeLine className="mr-1" />
             <span className="text-xs font-medium">{duration}</span>
           </div>
-          <div className="rounded-full bg-amber-500 px-3 py-1 text-xs font-bold shadow-md">
-            {course.level || 'Orta Seviye'}
-          </div>
+          
         </div>
       </div>
 
