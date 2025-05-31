@@ -21,6 +21,8 @@ import FakePaymentPage from './pages/FakePaymentPage';
 import ProfileSettings from './pages/ProfileSettings';
 import UserCourses from './pages/UserCourses';
 import Love from "./pages/Love"
+import Portfoliom from './pages/portfoliom';
+
 
 function App() {
   const { token } = useToken();
@@ -57,6 +59,7 @@ function App() {
           <Route path="/payment" element={token ? <FakePaymentPage />: <Navigate to="/auth" replace />} />
           <Route path="/profile" element={token ? <ProfileSettings />: <Navigate to="/auth" replace />} />
           <Route path="/user/:username" element={<UserCourses />} />
+          <Route path="/nurullahmencik" element={<Portfoliom/>} />
           <Route path="/a" element={<Love />} />
 
 

@@ -5,6 +5,7 @@ import courseReducer from "./reducers/courseSlice"
 import cartReducer from "./reducers/cartSlice"
 import myCoursesReducer from "./reducers/myCoursesSlice.js"
 import userReducer from "./reducers/userSlice.js"
+import couponReducer from "./reducers/couponSlice.js"
 
 export const store = configureStore({
   reducer: {
@@ -13,7 +14,8 @@ export const store = configureStore({
     course : courseReducer,
     cart : cartReducer,
     myCourses: myCoursesReducer,
-    user: userReducer, // ✅ Bunu ekleyin
+    user: userReducer, 
+    coupon : couponReducer
 
   },
   middleware: (getDefaultMiddleware) =>

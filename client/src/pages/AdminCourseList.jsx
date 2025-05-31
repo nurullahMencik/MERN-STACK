@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FiTrash2, FiSearch, FiRefreshCw } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCourses, deleteCourse } from '../redux/reducers/courseSlice';
+import AddCouponForm from '../components/AddCouponForm';
 
 const AdminCourseList = () => {
   const { courses, loading } = useSelector((state) => state.course);
@@ -119,6 +120,7 @@ const AdminCourseList = () => {
           </div>
         )}
       </div>
+      <AddCouponForm/>
     </div>
   );
 };

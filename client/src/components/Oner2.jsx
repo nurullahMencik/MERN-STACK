@@ -19,23 +19,16 @@ const Oner2 = () => {
     const fetchCourses = async () => {
       setLoading(true);
       setError(null);
-
       try {
         let response;
-        
         if (username) {
-          // Kullanıcı girişi yapılmışsa kişiselleştirilmiş önerileri al
           response = await axios.get(`https://konya-backend.onrender.com/api/simple-ai/${username}`);
-          
-          // Eğer kişiselleştirilmiş öneri yoksa veya boşsa popüler kursları getir
           if (!response.data || response.data.length === 0) {
             response = await axios.get(`https://konya-backend.onrender.com/api/simple-ai`);
           }
         } else {
-          // Kullanıcı girişi yapılmamışsa direkt popüler kursları getir
           response = await axios.get(`https://konya-backend.onrender.com/api/simple-ai`);
         }
-        
         setCourses(response.data || []);
       } catch (err) {
         setError('Öneriler yüklenirken hata oluştu.');
@@ -85,15 +78,19 @@ const Oner2 = () => {
         )}
       </div>
 
-      {loading && <p>Yükleniyor...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {!loading && !error && courses.length === 0 && (
-        <p>Henüz önerilecek kurs bulunamadı.</p>
-      )}
-
       <div className="relative">
-        {courses.length > 0 && (
+        {loading ? (
+          <div className="flex overflow-x-auto gap-6 py-4 px-2">
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <div
+                key={idx}
+                className="flex-shrink-0 w-[300px] h-[180px] bg-gray-200 rounded-lg animate-pulse"
+              />
+            ))}
+          </div>
+        ) : courses.length > 0 ? (
           <>
             <button
               onClick={scrollLeft}
@@ -120,7 +117,7 @@ const Oner2 = () => {
               className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-100"
               style={{
                 display:
-                  document.getElementById('courses-container') && 
+                  document.getElementById('courses-container') &&
                   scrollPosition >=
                     document.getElementById('courses-container')?.scrollWidth -
                     document.getElementById('courses-container')?.clientWidth
@@ -131,6 +128,8 @@ const Oner2 = () => {
               <FaChevronRight className="text-gray-800" />
             </button>
           </>
+        ) : (
+          <p>Henüz önerilecek kurs bulunamadı.</p>
         )}
       </div>
     </div>
