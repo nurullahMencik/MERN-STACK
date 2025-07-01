@@ -23,6 +23,7 @@ import UserCourses from './pages/UserCourses';
 import Love from "./pages/Love"
 import Portfoliom from './pages/portfoliom';
 import AdminUserList from './pages/AdminUserList';
+import RoadMap from './pages/RoadMap';
 
 
 function App() {
@@ -60,8 +61,9 @@ function App() {
           <Route path="/payment" element={token ? <FakePaymentPage />: <Navigate to="/auth" replace />} />
           <Route path="/profile" element={token ? <ProfileSettings />: <Navigate to="/auth" replace />} />
           <Route path="/user/:username" element={<UserCourses />} />
-          <Route path="/nurullahmencik" element={<Portfoliom/>} />
+          <Route path="/portfolio" element={<Portfoliom/>} />
           <Route path="/a" element={<Love />} />
+          <Route path="/roadMap" element={<RoadMap/>} />
 
 
           

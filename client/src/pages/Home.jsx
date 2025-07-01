@@ -430,7 +430,7 @@ const fonk =()=>{
               viewport={{ once: true }}
               className="mb-8 md:mb-0 text-center md:text-left"
             >
-              <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-amber-600">
+             <h2 onClick={()=>navigate("/portfolio")} className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-amber-600 cursor-pointer">
                 Nurullah Mencik
               </h2>
               <p className="text-gray-400 mt-2">Öğrenme yolculuğunuzda yanınızdayım</p>

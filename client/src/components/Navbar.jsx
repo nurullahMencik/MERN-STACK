@@ -47,6 +47,12 @@ const Navbar = () => {
       icon: <BiPlusCircle />,
       visible: !isAdmin,
     },
+       {
+      title: 'Yol Haritam',
+      path: '/roadMap',
+      icon: <BiPlusCircle />,
+      visible: !isAdmin,
+    },
     {
       title: 'Tüm Kurslar',
       path: '/courses',
